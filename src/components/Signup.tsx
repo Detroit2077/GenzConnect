@@ -1,15 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Input from "./Input";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import authSer from "../appwrite/auth";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { loginStatus } from "./Slicer/dataSlicer";
+import { AppDispatch } from "./store/store";
 
 const SignupComponent: React.FC = () => {
     const { register, handleSubmit } = useForm<FormData>();
+    const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
     const formSubmit: SubmitHandler<FormData> = async (data) => {
         try {
+            dispatch(loginStatus());
             const session = await authSer.createAccount(data);
             if (session) {
                 const useData = await authSer.getCurrentUser();
@@ -21,7 +26,13 @@ const SignupComponent: React.FC = () => {
             console.error(error);
         }
     };
-
+    useEffect(() => {
+        authSer.getCurrentUser().then((result) => {
+            if (result) {
+                navigate("/");
+            }
+        });
+    }, [navigate]);
     interface FormData {
         name: string;
         email: string;

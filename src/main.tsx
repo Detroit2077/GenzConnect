@@ -6,6 +6,9 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import Login from "./components/pages/Login.tsx";
 import Signup from "./components/pages/Signup.tsx";
 import Home from "./components/pages/Home.tsx";
+import { Provider } from "react-redux";
+import store from "./components/store/store.ts";
+import AuthenticationCheck from "./components/AuthenticationCheck.tsx";
 
 const router = createBrowserRouter([
     {
@@ -14,15 +17,27 @@ const router = createBrowserRouter([
         children: [
             {
                 path: "/",
-                element: <Home />,
+                element: (
+                    <AuthenticationCheck authentication={true}>
+                        <Home />
+                    </AuthenticationCheck>
+                ),
             },
             {
                 path: "/login",
-                element: <Login />,
+                element: (
+                    <AuthenticationCheck authentication={false}>
+                        <Login />
+                    </AuthenticationCheck>
+                ),
             },
             {
                 path: "/signup",
-                element: <Signup />,
+                element: (
+                    <AuthenticationCheck authentication={false}>
+                        <Signup />
+                    </AuthenticationCheck>
+                ),
             },
         ],
     },
@@ -30,6 +45,8 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")!).render(
     <StrictMode>
-        <RouterProvider router={router} />
+        <Provider store={store}>
+            <RouterProvider router={router} />
+        </Provider>
     </StrictMode>
 );
